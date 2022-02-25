@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="fonts/icomoon/style.css">
+
+    <link rel="stylesheet" href="css/owl.carousel.min.css">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    
+    <!-- Style -->
+    <link rel="stylesheet" href="css/style.css">
+
+    <title>Sign Up</title>
+
+
+    <script>
+      function removeSpace() {
+           $("#username").val($.trim($("#username").val()).replace(/ /g,''));
+        }
+      </script>
+  
+
+  <script>
+		var ref;
+		var pos;
+		var referral;
+		var sponsor_mail;
+		function go()
+		{
+		//how url is passed
+		//file:////Registration.html?referral=ugali&&position=left
+		var urlstuff = location.search;
+		const urlParams = new URLSearchParams(urlstuff);
+	    referral = urlParams.get("referral");
+		var position = urlParams.get("position");
+		ref = referral;
+		pos = position;
+	//	window.alert(referral);
+	//	window.alert(position);
+		document.getElementById("sponsor_id").value = referral;
+		document.getElementById("pposition").value = position.toUpperCase();
+		}
+	
+	 </script>
+
+
+<script src="https://www.gstatic.com/firebasejs/4.9.0/firebase.js"></script>
+<script>
+  // Initialize Firebase
+  var config = {
+  apiKey: "AIzaSyAXWVP-VUaTnCr9nq5QRs1HvYnDVt60FXU",
+  authDomain: "skylineinvestment-64d99.firebaseapp.com",
+  databaseURL: "https://skylineinvestment-64d99-default-rtdb.firebaseio.com",
+  projectId: "skylineinvestment-64d99",
+  storageBucket: "skylineinvestment-64d99.appspot.com",
+  messagingSenderId: "1030553967112",
+  appId: "1:1030553967112:web:dc722ad6556a76692dcfbd",
+  measurementId: "G-4DDY78GSEG"
+  };
+firebase.initializeApp(config);
+
+ function save_user(){
+
+  var data = {
+   username: document.getElementById('username').value,
+   password: document.getElementById('password').value,
+   name: document.getElementById('full_name').value,
+   email: document.getElementById('email').value,
+   phone_number: document.getElementById('mobile_number').value,
+   sponsor: ref,
+   position: pos,
+   balance: 0,
+   direct_referral: 0,
+   withdraws: 0,
+   left_balance: 0,
+   right_balance: 0
+  }
+
+  function gotonext(){
+	location.replace("../dashboard/index.html");
+  }
+
+  var updates = {};
+  updates['/users/' + document.getElementById('username').value] = data;
+  firebase.database().ref().update(updates).then(() => {
+
+  console.log("Saved successfully");
+//  window.alert("Account registered successfully");
+  sessionStorage.setItem("username", document.getElementById("username").value);
+  //location.replace("dashboard.html");
+
+  var databaserefer = firebase.database().ref('users/'+document.getElementById("username").value+"/password");
+
+  var user_saved = false;
+
+  
+
+  databaserefer.on('value', (snapshot) =>{
+      const data = snapshot.val();
+     // window.alert("Welcome");
+	 sessionStorage.setItem("username", document.getElementById("username").value);
+	 //location.replace("dashboard.html");
+	 if(data == document.getElementById("password").value)
+	 {
+		 sendEmail();
+	}
+
+    });
+
+	});
+  
+
+
+}
+
+function checkbox()
+{
+	if((document.getElementById("username").value != "") && (document.getElementById('password').value != "") && (document.getElementById('full_name').value != "") && (document.getElementById('email').value != "") && (document.getElementById('mobile_number').value != ""))
+	{
+	//	window.alert(document.getElementById("username").value);
+		checkusername();
+	}
+
+	else{
+		window.alert("Please fill in all the required fields");
+	}
+}
+
+function checkusername()
+{
+
+
+		var checked = false;
+		var exist = 500;
+		var data = "not_null";
+		
+			console.log("retying");
+		var databaserefer = firebase.database().ref('users/'+document.getElementById("username").value+"/password");
+  		
+  		databaserefer.on('value', (snapshot) =>{
+			console.log("okay");
+		
+	   	 data = snapshot.val();
+
+			
+		if(data == null)
+		{
+			exist = 1000;
+		}
+
+		else if(data != null && data != "not_null"){
+			exist = 2000;
+		}
+		else{console.log("");}
+
+		if(exist == 1000)
+			{
+				checked = true;
+				save_user();
+			}
+
+			else if(exist == 2000)
+			{
+				if(!checked)
+				{
+					window.alert("Username exists! Please choose a new username");
+				}
+				
+			}
+
+			else{
+				console.log("Retrying");
+			}
+
+    });
+
+
+		
+		
+  
+}
+
+
+</script>
+
+<script src="https://smtpjs.com/v3/smtp.js"></script>
+
+<script type="text/javascript">
+    function sendEmail() {
+
+
+
+		var databaserefer_sponsor_mail = firebase.database().ref('/users/' + referral +"/email");
+
+        databaserefer_sponsor_mail.on('value', (snapshot) =>{
+        const data2 = snapshot.val();
+        sponsor_mail = data2;
+        // window.alert(data);
+	 
+       });
+
+
+
+
+		var email_html_body = "<p>Hello " +document.getElementById("username").value + "!</p>" + "<h1>Welcome to Skyline Investment </h1> <p>Your account has been created successfully;</p><p>We hope you have a pleasant time investing with us</p>";
+
+      Email.send({
+        Host: "smtp.gmail.com",
+        Username: "emailskylineinvestment@gmail.com",
+        Password: "neno$iri",
+        To: document.getElementById('email').value,
+        From: "emailskylineinvestment@gmail.com",
+        Subject: "Account Creation Successful",
+        Body: email_html_body,
+      })
+        .then(function (message) {
+          console.log("mail sent successfully")
+        });
+    
+
+
+	var email_html_body2 = "<p>Hello " +referral + "!</p>" + "<h1>You are making progress! </h1> <p>"+document.getElementById("username").value+" has created an account has created an account using your referral link;</p><p>A bonus will be added to your account once they make a deposit</p><p>Happy investing</p><p>SKYLINE INVESTMENT</p>";
+
+	Email.send({
+  Host: "smtp.gmail.com",
+  Username: "emailskylineinvestment@gmail.com",
+  Password: "neno$iri",
+  To: sponsor_mail,
+  From: "emailskylineinvestment@gmail.com",
+  Subject: "Referral Creation Successful",
+  Body: email_html_body2,
+})
+  .then(function (message) {
+	console.log("mail 2 sent successfully");
+	window.alert("Account registered successfully!");
+	location.replace("../dashboard/index.html");;
+  });
+	
+}
+
+
+  </script>
+
+
+
+
+  </head>
+  <body>
+  
+
+  
+  <div class="content">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6">
+          <img src="../img/24.png" alt="Image" class="img-fluid">
+        </div>
+        <div class="col-md-6 contents">
+          <div class="row justify-content-center">
+            <div class="col-md-8">
+              <div class="mb-4">
+              <h3>Sign Up</h3>
+              <p class="mb-4">Please provide the information below.</p>
+            </div>
+            <form action="#" method="post">
+
+
+              <div class="form-group first">
+                <label for="referral-id">Referral Id</label>
+                <input type="text" class="form-control" id="sponsor_id" disabled>
+
+              </div>
+
+
+              <div class="form-group first">
+                <label for="position">Position</label>
+                <input type="text" class="form-control" id="pposition" disabled>
+
+              </div>
+
+              <div class="form-group first">
+                <label for="username">Username</label>
+                <input type="text" class="form-control" onkeyup="removeSpace()" id="username">
+
+              </div>
+
+
+
+              <div class="form-group first">
+                <label for="password">Password</label>
+                <input type="password" class="form-control" id="password">
+
+              </div>
+
+
+
+
+              <div class="form-group first">
+                <label for="fullname">Full name</label>
+                <input type="text" class="form-control" id="full_name">
+
+              </div>
+
+              <div class="form-group first">
+                <label for="email">Email</label>
+                <input type="email" class="form-control" id="email">
+
+              </div>
+              <div class="form-group last mb-4">
+                <label for="number">Mobile Number</label>
+                <input type="number" class="form-control" id="mobile_number">
+                
+              </div>
+              
+              <div class="d-flex mb-5 align-items-center">
+                
+                <span class="ml-auto"><a href="login.html" class="forgot-pass">Already have an account? Login</a></span> 
+              </div>
+
+              <input type="button" onclick="checkbox()" value="Sign Up" class="btn btn-block btn-primary">
+
+              
+            </form>
+            </div>
+          </div>
+          
+        </div>
+        
+      </div>
+    </div>
+  </div>
+
+  
+    <script src="js/jquery-3.3.1.min.js"></script>
+    <script src="js/popper.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/main.js"></script>
+  </body>
+</html>

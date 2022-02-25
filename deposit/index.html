@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="fonts/icomoon/style.css">
+
+    <link rel="stylesheet" href="css/owl.carousel.min.css">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    
+    <!-- Style -->
+    <link rel="stylesheet" href="css/style.css">
+
+    <title>Deposit</title>
+
+
+
+    <script src="https://smtpjs.com/v3/smtp.js"></script>
+
+
+    <script src="https://www.gstatic.com/firebasejs/4.9.0/firebase.js"></script>
+    <script>
+      // Initialize Firebase
+      var config = {
+      apiKey: "AIzaSyAXWVP-VUaTnCr9nq5QRs1HvYnDVt60FXU",
+      authDomain: "skylineinvestment-64d99.firebaseapp.com",
+      databaseURL: "https://skylineinvestment-64d99-default-rtdb.firebaseio.com",
+      projectId: "skylineinvestment-64d99",
+      storageBucket: "skylineinvestment-64d99.appspot.com",
+      messagingSenderId: "1030553967112",
+      appId: "1:1030553967112:web:dc722ad6556a76692dcfbd",
+      measurementId: "G-4DDY78GSEG"
+      };
+    firebase.initializeApp(config);
+    
+     function record_deposit(){
+      function days_passed(dt) {
+          var current = new Date(dt.getTime());
+          var previous = new Date(dt.getFullYear(), 0, 1);
+  
+         return Math.ceil((current - previous + 1) / 86400000);
+          }
+  
+          var days_count = (days_passed(new Date()));
+    
+      var mail;    
+          
+      var data = {
+       hash: document.getElementById('hash').value,
+       address: "",
+       amount: parseInt(sessionStorage.getItem("amount")),
+       date: days_count,
+       date_uploaded: Date(),
+       approved: false
+      }
+    
+      var updates = {};
+      updates['/deposits/' + sessionStorage.getItem('username')+'/' ] = data;
+      firebase.database().ref().update(updates).then(() => {
+  
+      console.log("Saved successfully");
+      var databaserefer_mail = firebase.database().ref('/users/' + sessionStorage.getItem('username')+"/" +"/email");
+  
+      databaserefer_mail.on('value', (snapshot) =>{
+      const data2 = snapshot.val();
+      mail = data2;
+      // window.alert(data);
+  
+      });
+  
+      function sendEmail() {
+  
+  var email_html_body = "<p>Hello " +sessionStorage.getItem("username") + "!</p>" + "<h1>Deposit recorded successfully </h1> <p>Your account balance will be updated within the next 24 hours;</p><p>We hope you have a pleasant time investing with us</p>";
+  
+    Email.send({
+      Host: "smtp.gmail.com",
+      Username: "emailskylineinvestment@gmail.com",
+      Password: "neno$iri",
+      To: mail,
+      From: "emailskylineinvestment@gmail.com",
+      Subject: "SKYLINE INVESTMENT - Deposit",
+      Body: email_html_body,
+    })
+      .then(function (message) {
+        console.log("mail sent successfully")
+      });
+  }
+  
+  
+    sendEmail();
+  
+  
+  
+      window.alert("Deposit recorded sucessfully! Wait 24 hours for deposit confirmation");
+  
+  
+      location.replace("dashboard.html");
+  
+      }); 
+    
+    }
+    
+    
+    
+    </script>
+    
+  
+    <script>
+  
+  var image_src;
+  var our_address;
+  
+    </script>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <script>
+      function print_intro(){
+  
+        if(sessionStorage.getItem("username") == null)
+                {
+                  location.replace("../Login.html");
+                }
+  
+  
+      var type = sessionStorage.getItem("type");
+     // type = toUpperCase(type);
+      document.title = "Deposit - "+ type;
+     // document.getElementById("type_button").innerHTML = type;
+      document.getElementById("instructions").innerHTML = "Scan QR code above and send $"+sessionStorage.getItem("amount") + " worth of "+type + " or copy our "+ type +" address on button below, then enter transaction hash and sender's address below";
+    
+      if(type == "USDT")
+      {
+        image_src = "img/usdt_qr.jpeg";;
+        our_address = "TNNfTGVTDcS2ztYVvhigjHg5nwA6TXYqJk";
+      }
+    else{
+      image_src = "img/btc_qr.jpeg";
+      our_address = "bc1q97czk353tsj57e3y9902mchcw4pvesn6h23yjh";
+    }
+    document.getElementById("qr_image").src = image_src;
+    
+    
+    }
+  
+      function copyToClipboard(e) {
+  
+  var tempItem = document.createElement('input');
+  
+  tempItem.setAttribute('type', 'text');
+  tempItem.setAttribute('display', 'none');
+  
+  let content = e;
+  if (e instanceof HTMLElement) {
+      content = e.innerHTML;
+  }
+  
+  tempItem.setAttribute('value', content);
+  document.body.appendChild(tempItem);
+  
+  tempItem.select();
+  document.execCommand('Copy');
+  
+  tempItem.parentElement.removeChild(tempItem);
+  }
+  </script>
+  
+  
+
+
+
+
+
+  </head>
+  <body onload="print_intro()">
+  
+
+  
+  <div class="content">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6">
+          <img src="../img/29.png" alt="Image" class="img-fluid" id="qr_image">
+        </div>
+        <div class="col-md-6 contents">
+          <div class="row justify-content-center">
+            <div class="col-md-8">
+              <div class="mb-4">
+              <h3>Log In</h3>
+              <p class="mb-4"></p>
+            </div>
+            <form action="#" method="post">
+              <div class="form-group first">
+                <label for="username">Transaction hash</label>
+                <input type="text" class="form-control" id="username">
+
+              </div>
+                            
+              <div class="d-flex mb-5 align-items-center">
+                <span class="ml-auto" id="instructions"></a> 
+              </div>
+
+              <input type="button" value="Copy our-Address" class="btn btn-block btn-primary" onClick="copyToClipboard(our_address); window.alert(type + ' address copied')">
+              <input type="button" value="Submit" class="btn btn-block btn-primary" onClick="record_deposit()">
+
+              </form>
+            </div>
+          </div>
+          
+        </div>
+        
+      </div>
+    </div>
+  </div>
+
+  
+    <script src="js/jquery-3.3.1.min.js"></script>
+    <script src="js/popper.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/main.js"></script>
+  </body>
+</html>

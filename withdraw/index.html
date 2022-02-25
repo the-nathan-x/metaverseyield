@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="fonts/icomoon/style.css">
+
+    <link rel="stylesheet" href="css/owl.carousel.min.css">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    
+    <!-- Style -->
+    <link rel="stylesheet" href="css/style.css">
+
+    <title>Withdraw</title>
+
+
+
+
+
+    <script src="https://smtpjs.com/v3/smtp.js"></script>
+
+    <script src="https://www.gstatic.com/firebasejs/4.9.0/firebase.js"></script>
+    <script>
+      // Initialize Firebase
+      var config = {
+      apiKey: "AIzaSyAXWVP-VUaTnCr9nq5QRs1HvYnDVt60FXU",
+      authDomain: "skylineinvestment-64d99.firebaseapp.com",
+      databaseURL: "https://skylineinvestment-64d99-default-rtdb.firebaseio.com",
+      projectId: "skylineinvestment-64d99",
+      storageBucket: "skylineinvestment-64d99.appspot.com",
+      messagingSenderId: "1030553967112",
+      appId: "1:1030553967112:web:dc722ad6556a76692dcfbd",
+      measurementId: "G-4DDY78GSEG"
+      };
+    firebase.initializeApp(config);
+    var mail;
+     function record_withdraw(){
+    
+      var data = {
+       withdraw_amount: parseInt(document.getElementById('withdraw_amount').value),
+       address: document.getElementById('address').value,
+       date: Date(),
+       approved: false
+      }
+    
+      var updates = {};
+      updates['/withdraws/' + sessionStorage.getItem('username')+'/' ] = data;
+      firebase.database().ref().update(updates);
+  
+      firebase.database().ref().update(updates).then(() => {
+        
+  
+        
+      console.log("Saved successfully")
+    
+    var databaserefer = firebase.database().ref('withdraws/'+sessionStorage.getItem('username')+"/");
+  
+    var user_saved = false;
+  
+    databaserefer.on('value', (snapshot) =>{
+        const data = snapshot.val();
+        window.alert("Withdraw recorded! Wait for 24 hours for approval");
+       
+        var databaserefer_mail = firebase.database().ref('/users/' + sessionStorage.getItem('username')+"/" +"/email");
+  
+        databaserefer_mail.on('value', (snapshot) =>{
+        const data2 = snapshot.val();
+        mail = data2;
+    // window.alert(data);
+  
+    });
+  
+    function sendEmail() {
+  
+    var email_html_body = "<p>Hello " +sessionStorage.getItem("username") + "!</p>" + "<h1>Withdraw request recorded successfully </h1> <p>Your account balance will be updated within the next 24 hours;</p><p>We hope you have a pleasant time investing with us</p>";
+  
+  Email.send({
+    Host: "smtp.gmail.com",
+    Username: "emailskylineinvestment@gmail.com",
+    Password: "neno$iri",
+    To: mail,
+    From: "emailskylineinvestment@gmail.com",
+    Subject: "SKYLINE INVESTMENT - Withdraw",
+    Body: email_html_body,
+  })
+    .then(function (message) {
+      console.log("mail sent successfully")
+    });
+  }
+  
+  
+  sendEmail();
+  
+  
+  
+    //location.replace("dashboard.html");
+      });
+  
+  
+  }).catch(error => {console.log('Error:', error)})
+  
+  
+     }
+  
+  
+  
+  
+  
+    
+    
+    
+    </script>
+    
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <script>
+      function print_instructions(){
+        if(sessionStorage.getItem("username") == null)
+                {
+                  location.replace("../Login.html");
+                }
+  
+  
+  
+      document.getElementById("instructions").innerHTML = "Hello "+sessionStorage.getItem("username") + " Enter your USDT address below, mininum withdraw amount is $25. Your withdrawable balance is "+sessionStorage.getItem("withdrawable_balance");
+     // window.alert(sessionStorage.getItem("total_balance"));
+      if(parseInt(sessionStorage.getItem("withdrawable_balance")) < 25){
+        window.alert("You do not have minimum withdraw balance which is $25, Your withdrawable balance is "+ sessionStorage.getItem("withdrawable_balance"));
+        location.replace("dashboard/index.html");
+      }
+    }
+  
+      function copyToClipboard(e) {
+  
+  var tempItem = document.createElement('input');
+  
+  tempItem.setAttribute('type', 'text');
+  tempItem.setAttribute('display', 'none');
+  
+  let content = e;
+  if (e instanceof HTMLElement) {
+      content = e.innerHTML;
+  }
+  
+  tempItem.setAttribute('value', content);
+  document.body.appendChild(tempItem);
+  
+  tempItem.select();
+  document.execCommand('Copy');
+  
+  tempItem.parentElement.removeChild(tempItem);
+  }
+  
+  function gate()
+  {
+    if(parseInt(sessionStorage.getItem("withdrawable_balance")) > document.getElementById("withdraw_amount").value)
+    {
+      record_withdraw();
+    }
+    else{
+      window.alert("Enter an amount less than your withdrawable amount");
+    }
+  }
+  </script>
+  
+
+
+
+
+
+  </head>
+  <body onload="print_instructions()">
+  
+
+  
+  <div class="content">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6">
+          <img src="../img/12.png" alt="Image" class="img-fluid">
+        </div>
+        <div class="col-md-6 contents">
+          <div class="row justify-content-center">
+            <div class="col-md-8">
+              <div class="mb-4">
+              <h3>Withdraw</h3>
+              <p class="mb-4"></p>
+            </div>
+            <form action="#" method="post">
+              <div class="form-group first">
+                <label for="username">Withdraw Amount</label>
+                <input type="text" class="form-control" id="withdraw_amount">
+
+              </div>
+              <div class="form-group last mb-4">
+                <label for="password">USDT Address</label>
+                <input type="text" class="form-control" id="address">
+                
+              </div>
+              
+              <div class="d-flex mb-5 align-items-center">
+                <span class="ml-auto" id="instructions">-</span> 
+              </div>
+
+              <input type="button" value="Request withdraw" class="btn btn-block btn-primary" onClick="gate()">
+
+              </form>
+            </div>
+          </div>
+          
+        </div>
+        
+      </div>
+    </div>
+  </div>
+
+  
+    <script src="js/jquery-3.3.1.min.js"></script>
+    <script src="js/popper.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/main.js"></script>
+  </body>
+</html>
