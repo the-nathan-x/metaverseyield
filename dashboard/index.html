@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Dashboard</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="" name="keywords">
+    <meta content="" name="description">
+
+    <!-- plugins:css -->
+  <link rel="stylesheet" href="vendors/feather/feather.css">
+  <link rel="stylesheet" href="vendors/mdi/css/materialdesignicons.min.css">
+  <link rel="stylesheet" href="vendors/ti-icons/css/themify-icons.css">
+  <link rel="stylesheet" href="vendors/typicons/typicons.css">
+  <link rel="stylesheet" href="vendors/simple-line-icons/css/simple-line-icons.css">
+  <link rel="stylesheet" href="vendors/css/vendor.bundle.base.css">
+  <!-- endinject -->
+  <!-- Plugin css for this page -->
+  <link rel="stylesheet" href="vendors/datatables.net-bs4/dataTables.bootstrap4.css">
+  <link rel="stylesheet" href="js/select.dataTables.min.css">
+  <!-- End plugin css for this page -->
+  <!-- inject:css -->
+  <link rel="stylesheet" href="css/vertical-layout-light/style.css">
+  <!-- endinject -->
+ <!-- <link rel="shortcut icon" href="images/favicon.png" />
+-->
+
+  <style>
+    .container {
+      position: relative;
+      width: 100%;
+      overflow: hidden;
+      padding-top: 100%; /* 1:1 Aspect Ratio */
+    }
+    
+    .responsive-iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+    </style>
+  
+
+
+    <!-- Favicon -->
+    <link href="img/favicon.ico" rel="icon">
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Icon Font Stylesheet -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Libraries Stylesheet -->
+    <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+    <link href="lib/tempusdominus/css/tempusdominus-bootstrap-4.min.css" rel="stylesheet" />
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Template Stylesheet -->
+    <link href="css/style.css" rel="stylesheet">
+
+     
+    <script src="https://www.gstatic.com/firebasejs/4.9.0/firebase.js"></script>
+    <script>
+      // Initialize Firebase
+   
+      var config = {
+       apiKey: "AIzaSyAXWVP-VUaTnCr9nq5QRs1HvYnDVt60FXU",
+       authDomain: "skylineinvestment-64d99.firebaseapp.com",
+       databaseURL: "https://skylineinvestment-64d99-default-rtdb.firebaseio.com",
+       projectId: "skylineinvestment-64d99",
+       storageBucket: "skylineinvestment-64d99.appspot.com",
+       messagingSenderId: "1030553967112",
+       appId: "1:1030553967112:web:dc722ad6556a76692dcfbd",
+       measurementId: "G-4DDY78GSEG"
+   };
+   
+      firebase.initializeApp(config);
+    </script>
+
+
+    <script>
+        
+
+    </script>
+
+
+    <script>
+        var link_left, link_right;
+        var direct_bonus;
+        function go()
+        {
+            var username = sessionStorage.getItem("username");
+            var my_investment, binary;
+
+             if(sessionStorage.getItem("username") == null)
+             {
+               location.replace("../login_signup/signup.html");
+             }
+
+
+            document.getElementById("user").innerHTML = username;
+            link_left = "http://skylineinvestment.finance/UserApp/Registration.html?referral="+username+"&&position=left";
+            link_right = "http://skylineinvestment.finance/UserApp/Registration.html?referral="+username+"&&position=right";
+            document.getElementById("print-link-left").innerHTML = link_left;
+            document.getElementById("print-link-right").innerHTML = link_right;
+           
+            
+            var databaseRef = firebase.database().ref('users/');
+            var withdraws_total;
+
+            databaseRef.once('value', function(snapshot) {
+            snapshot.forEach(function(childSnapshot) {
+            var childKey = childSnapshot.key;
+            var childData = childSnapshot.val();
+             console.log("okay"); 
+             console.log(childKey)  
+                if(childKey == sessionStorage.getItem('username'))
+                {
+
+                     //window.alert(childData.balance);
+                console.log(childData.balance);
+             document.getElementById("balance").innerHTML = childData.balance;
+             document.getElementById("direct_referral").innerHTML = childData.direct_referral;
+             document.getElementById("withdraws").innerHTML = childData.withdraws;
+             document.getElementById("left_balance").innerHTML = childData.left_balance;
+             document.getElementById("right_balance").innerHTML = childData.right_balance;
+             my_investment = childData.balance;
+             direct_bonus = childData.left_balance;
+             binary = childData.direct_referral;
+             withdraws_total = childData.withdraws;
+                }
+               
+
+
+});
+});
+
+
+
+
+var databaserefer = firebase.database().ref('/deposits/' + username +"/date");
+       var last_deposit_date;
+
+       databaserefer.on('value', (snapshot) =>{
+       const data = snapshot.val();
+       last_deposit_date = data;
+       // window.alert(data);
+  
+       var time_now = Date();
+
+       function days_passed(dt) {
+       var current = new Date(dt.getTime());
+       var previous = new Date(dt.getFullYear(), 0, 1);
+
+      return Math.ceil((current - previous + 1) / 86400000);
+       }
+
+       var days_count = (days_passed(new Date()));
+
+       days_difference = days_count - last_deposit_date;
+    //   window.alert(days_difference);
+
+       //Calculating return on investment
+       var roi = parseInt(my_investment) * 0.02 * parseInt(days_difference);
+       var withdrawable_balance;
+
+       
+
+       var total_balance = parseInt(roi) + parseInt(binary) + parseInt(my_investment) - parseInt(withdraws_total) + parseInt(direct_bonus);
+       withdrawable_balance = total_balance - parseInt(my_investment);   
+
+       document.getElementById("direct_referral").innerHTML = binary;
+       document.getElementById("left_balance").innerHTML = roi;
+       document.getElementById("right_balance").innerHTML = withdrawable_balance;
+       document.getElementById("direct").innerHTML = direct_bonus; 
+       sessionStorage.setItem("withdrawable_balance", withdrawable_balance);
+       sessionStorage.setItem("total_balance", total_balance);
+
+
+
+
+      });
+      
+//Print dirrect refferals
+     var direct_table = document.getElementById('direct_reffarals_table');
+     var databaseRef = firebase.database().ref('users/');
+     var rowIndex = 1;
+     
+     databaseRef.once('value', function(snapshot) {
+       snapshot.forEach(function(childSnapshot) {
+      var childKey = childSnapshot.key;
+      var childData = childSnapshot.val();
+      
+      
+   
+      if(childData.sponsor == sessionStorage.getItem("username"))
+      {
+
+      var row = direct_table.insertRow(rowIndex);
+      var cellUsername = row.insertCell(0);
+      var cellStatus = row.insertCell(1);
+
+      cellUsername.appendChild(document.createTextNode(childData.username));
+      if(childData.balance < 50){
+       cellStatus.appendChild(document.createTextNode("inactive"));  
+      }
+
+      else{
+       cellStatus.appendChild(document.createTextNode("active"));
+      }
+      
+      var reffered_user = childData.username;
+      
+     var indirect_table = document.getElementById('indirect_reffarals_table');
+     var databaseRef2 = firebase.database().ref('users/');
+     var rowIndex2 = 1;
+     
+     databaseRef2.once('value', function(snapshot) {
+       snapshot.forEach(function(childSnapshot) {
+      var childKey2 = childSnapshot.key;
+      var childData2 = childSnapshot.val();
+      
+      
+     // window.alert(reffered_user); 
+      if(childData2.sponsor == reffered_user)
+      {
+      var row2 = indirect_table.insertRow(rowIndex2);
+      var cellUsername2 = row2.insertCell(0);
+      var cellStatus2 = row2.insertCell(1);
+
+      cellUsername2.appendChild(document.createTextNode(childData2.username));
+      if(childData2.balance < 50){
+       cellStatus2.appendChild(document.createTextNode("inactive"));  
+      }
+
+      else{
+       cellStatus2.appendChild(document.createTextNode("active"));
+      }
+      
+      rowIndex2 = rowIndex2 + 1;
+      }
+      
+      
+       });
+     });
+   
+
+
+     rowIndex = rowIndex + 1;
+      }
+      
+      
+       });
+     });
+   
+
+
+
+
+        }
+
+
+       
+
+
+
+
+        function myFunction2() {
+               var target = link_right;
+               copyToClipboard(target);
+               alert("Referral Link Copied Successfully");
+           }
+
+
+           function myFunctionxvy() {
+               var target = link_left;
+               copyToClipboard(target);
+               alert("Referral Link Copied Successfully");
+           }
+
+           function copyToClipboard(e) {
+
+               var tempItem = document.createElement('input');
+
+               tempItem.setAttribute('type', 'text');
+               tempItem.setAttribute('display', 'none');
+
+               let content = e;
+               if (e instanceof HTMLElement) {
+                   content = e.innerHTML;
+               }
+
+               tempItem.setAttribute('value', content);
+               document.body.appendChild(tempItem);
+
+               tempItem.select();
+               document.execCommand('Copy');
+
+               tempItem.parentElement.removeChild(tempItem);
+           }
+
+           function function_logout()
+           {
+             console.log("okay");
+             sessionStorage.clear();
+             location.replace("../index.html");
+           }
+
+    </script>
+
+
+
+
+
+  </head>
+
+<body onload="go()">
+    <div class="container-xxl position-relative bg-white d-flex p-0">
+        <!-- Spinner Start -->
+        <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+            <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+        </div>
+        <!-- Spinner End -->
+
+
+        <!-- Sidebar Start -->
+        <div class="sidebar pe-4 pb-3">
+            <nav class="navbar bg-light navbar-light">
+                <a href="index.html" class="navbar-brand mx-4 mb-3">
+                    <h3 class="text-primary"></h3>
+                </a>
+                <div class="d-flex align-items-center ms-4 mb-4">
+                   
+                   
+                </div>
+                <div class="navbar-nav w-100">
+                    <a href="index.html" class="nav-item nav-link active"><i class="fa fa-tachometer-alt me-2"></i>Dashboard</a>
+                    <div class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fa fa-laptop me-2"></i>Deposit USDT</a>
+                        <div class="dropdown-menu bg-transparent border-0">
+                            <a href="button.html" class="dropdown-item">Bronze</a>
+
+                            <div class="nav-item dropdown">
+                              <a href="#" onclick="sessionStorage.setItem('amount', 50); sessionStorage.setItem('type', 'USDT'); location.replace('../deposit/index.html')" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fa fa-laptop me-2"></i>Lite - $50</a>
+                          </div>
+
+                          <div class="nav-item dropdown">
+                            <a href="#" class="nav-link dropdown-toggle" onclick="sessionStorage.setItem('amount', 100); sessionStorage.setItem('type', 'USDT'); location.replace('../deposit/index.html')"  data-bs-toggle="dropdown"><i class="fa fa-laptop me-2"></i>Medium - 100</a>
+                        </div>
+
+                        <div class="nav-item dropdown">
+                          <a href="#" class="nav-link dropdown-toggle" onclick="sessionStorage.setItem('amount', 200); sessionStorage.setItem('type', 'USDT'); location.replace('../deposit/index.html')" data-bs-toggle="dropdown"><i class="fa fa-laptop me-2"></i>Extra - $200</a>
+                      </div>
+
+
+
+
+                      
+                        <a href="button.html" class="dropdown-item">Silver</a>
+
+                        <div class="nav-item dropdown">
+                          <a href="#" class="nav-link dropdown-toggle" onclick="sessionStorage.setItem('amount', 300); sessionStorage.setItem('type', 'USDT'); location.replace('../deposit/index.html')" data-bs-toggle="dropdown"><i class="fa fa-laptop me-2"></i>Lite - $300</a>
+                      </div>
+
+                      <div class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" onclick="sessionStorage.setItem('amount', 500); sessionStorage.setItem('type', 'USDT'); location.replace('../deposit/index.html')" data-bs-toggle="dropdown"><i class="fa fa-laptop me-2"></i>Medium - 500</a>
+                    </div>
+
+                    <div class="nav-item dropdown">
+                      <a href="#" class="nav-link dropdown-toggle" onclick="sessionStorage.setItem('amount', 700); sessionStorage.setItem('type', 'USDT'); location.replace('../deposit/index.html')" data-bs-toggle="dropdown"><i class="fa fa-laptop me-2"></i>Extra - $700</a>
+                  </div>
+
+
+
+                  <a href="button.html" class="dropdown-item">Gold</a>
+
+                        <div class="nav-item dropdown">
+                          <a href="#" class="nav-link dropdown-toggle" onclick="sessionStorage.setItem('amount', 1000); sessionStorage.setItem('type', 'USDT'); location.replace('../deposit/index.html')" data-bs-toggle="dropdown"><i class="fa fa-laptop me-2"></i>Lite - $1000</a>
+                      </div>
+
+                      <div class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" onclick="sessionStorage.setItem('amount', 1500); sessionStorage.setItem('type', 'USDT'); location.replace('../deposit/index.html')" data-bs-toggle="dropdown"><i class="fa fa-laptop me-2"></i>Medium - $1500</a>
+                    </div>
+
+                    <div class="nav-item dropdown">
+                      <a href="#" class="nav-link dropdown-toggle" onclick="sessionStorage.setItem('amount', 2000); sessionStorage.setItem('type', 'USDT'); location.replace('../deposit/index.html')" data-bs-toggle="dropdown"><i class="fa fa-laptop me-2"></i>Extra - $2000</a>
+                  </div>
+
+
+
+
+                  <a href="button.html" class="dropdown-item">Platnum</a>
+
+                        <div class="nav-item dropdown">
+                          <a href="#" class="nav-link dropdown-toggle" onclick="sessionStorage.setItem('amount', 3000); sessionStorage.setItem('type', 'USDT'); location.replace('../deposit/index.html')" data-bs-toggle="dropdown"><i class="fa fa-laptop me-2"></i>Lite - $3000</a>
+                      </div>
+
+                      <div class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" onclick="sessionStorage.setItem('amount', 4000); sessionStorage.setItem('type', 'USDT'); location.replace('../deposit/index.html')" data-bs-toggle="dropdown"><i class="fa fa-laptop me-2"></i>Medium - $4000</a>
+                    </div>
+
+                    <div class="nav-item dropdown">
+                      <a href="#" class="nav-link dropdown-toggle" onclick="sessionStorage.setItem('amount', 5000); sessionStorage.setItem('type', 'USDT'); location.replace('../deposit/index.html')" data-bs-toggle="dropdown"><i class="fa fa-laptop me-2"></i>Extra - $5000</a>
+                  </div>
+                            
+
+
+
+
+                        
+
+
+
+                            <a href="element.html" class="dropdown-item">Other Elements</a>
+                        </div> 
+                    </div>
+
+
+
+
+                    <div class="nav-item dropdown">
+                      <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fa fa-laptop me-2"></i>Deposit BTC</a>
+                      <div class="dropdown-menu bg-transparent border-0">
+                          <a href="button.html" class="dropdown-item">Bronze</a>
+
+                          <div class="nav-item dropdown">
+                            <a href="#" class="nav-link dropdown-toggle" onclick="sessionStorage.setItem('amount', 50); sessionStorage.setItem('type', 'BTC'); location.replace('../deposit/index.html')" data-bs-toggle="dropdown"><i class="fa fa-laptop me-2"></i>Lite - $50</a>
+                        </div>
+
+                        <div class="nav-item dropdown">
+                          <a href="#" class="nav-link dropdown-toggle" onclick="sessionStorage.setItem('amount', 100); sessionStorage.setItem('type', 'BTC'); location.replace('../deposit/index.html')" data-bs-toggle="dropdown"><i class="fa fa-laptop me-2"></i>Medium - 100</a>
+                      </div>
+
+                      <div class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" onclick="sessionStorage.setItem('amount', 200); sessionStorage.setItem('type', 'BTC'); location.replace('../deposit/index.html')" data-bs-toggle="dropdown"><i class="fa fa-laptop me-2"></i>Extra - $200</a>
+                    </div>
+
+
+
+
+                    
+                      <a href="button.html" class="dropdown-item">Silver</a>
+
+                      <div class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" onclick="sessionStorage.setItem('amount', 300); sessionStorage.setItem('type', 'BTC'); location.replace('../deposit/index.html')" data-bs-toggle="dropdown"><i class="fa fa-laptop me-2"></i>Lite - $300</a>
+                    </div>
+
+                    <div class="nav-item dropdown">
+                      <a href="#" class="nav-link dropdown-toggle" onclick="sessionStorage.setItem('amount', 500); sessionStorage.setItem('type', 'BTC'); location.replace('../deposit/index.html')" data-bs-toggle="dropdown"><i class="fa fa-laptop me-2"></i>Medium - $500</a>
+                  </div>
+
+                  <div class="nav-item dropdown">
+                    <a href="#" class="nav-link dropdown-toggle" onclick="sessionStorage.setItem('amount', 700); sessionStorage.setItem('type', 'BTC'); location.replace('../deposit/index.html')" data-bs-toggle="dropdown"><i class="fa fa-laptop me-2"></i>Extra - $700</a>
+                </div>
+
+
+
+                <a href="button.html" class="dropdown-item">Gold</a>
+
+                      <div class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" onclick="sessionStorage.setItem('amount', 1000); sessionStorage.setItem('type', 'BTC'); location.replace('../deposit/index.html')" data-bs-toggle="dropdown"><i class="fa fa-laptop me-2"></i>Lite - $1000</a>
+                    </div>
+
+                    <div class="nav-item dropdown">
+                      <a href="#" class="nav-link dropdown-toggle" onclick="sessionStorage.setItem('amount', 1500); sessionStorage.setItem('type', 'BTC'); location.replace('../deposit/index.html')" data-bs-toggle="dropdown"><i class="fa fa-laptop me-2"></i>Medium - $1500</a>
+                  </div>
+
+                  <div class="nav-item dropdown">
+                    <a href="#" class="nav-link dropdown-toggle" onclick="sessionStorage.setItem('amount', 2000); sessionStorage.setItem('type', 'BTC'); location.replace('../deposit/index.html')" data-bs-toggle="dropdown"><i class="fa fa-laptop me-2"></i>Extra - $2000</a>
+                </div>
+
+
+
+
+                <a href="button.html" class="dropdown-item">Platnum</a>
+
+                      <div class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" onclick="sessionStorage.setItem('amount', 3000); sessionStorage.setItem('type', 'BTC'); location.replace('../deposit/index.html')" data-bs-toggle="dropdown"><i class="fa fa-laptop me-2"></i>Lite - $3000</a>
+                    </div>
+
+                    <div class="nav-item dropdown">
+                      <a href="#" class="nav-link dropdown-toggle" onclick="sessionStorage.setItem('amount', 4000); sessionStorage.setItem('type', 'BTC'); location.replace('../deposit/index.html')" data-bs-toggle="dropdown"><i class="fa fa-laptop me-2"></i>Medium - $4000</a>
+                  </div>
+
+                  <div class="nav-item dropdown">
+                    <a href="#" class="nav-link dropdown-toggle" onclick="sessionStorage.setItem('amount', 5000); sessionStorage.setItem('type', 'BTC'); location.replace('../deposit/index.html')" data-bs-toggle="dropdown"><i class="fa fa-laptop me-2"></i>Extra - $5000</a>
+                </div>
+                          
+
+
+
+
+                      
+
+
+
+                          <a href="element.html" class="dropdown-item">Other Elements</a>
+                      </div> 
+                  </div>
+
+
+
+                    <a href="../withdraw/index.html" class="nav-item nav-link"><i class="fa fa-table me-2"></i>Withdraw USDT</a>
+                    <a href="#" class="nav-item nav-link"><i class="fa fa-chart-bar me-2"></i>Support</a>
+                    <div class="nav-item dropdown">
+           <!--             <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="far fa-file-alt me-2"></i>Pages</a>
+                        <div class="dropdown-menu bg-transparent border-0">
+                            <a href="signin.html" class="dropdown-item">Sign In</a>
+                            <a href="signup.html" class="dropdown-item">Sign Up</a>
+                            <a href="404.html" class="dropdown-item">404 Error</a>
+                            <a href="blank.html" class="dropdown-item">Blank Page</a>
+                        </div> -->
+                    </div>
+                </div>
+            </nav>
+        </div>
+        <!-- Sidebar End -->
+
+
+        <!-- Content Start -->
+        <div class="content">
+            <!-- Navbar Start -->
+            <nav class="navbar navbar-expand bg-light navbar-light sticky-top px-4 py-0">
+                <a href="index.html" class="navbar-brand d-flex d-lg-none me-4">
+                    <h2 class="text-primary mb-0"><i class="fa fa-hashtag"></i></h2>
+                </a>
+                <a href="#" class="sidebar-toggler flex-shrink-0">
+                    <i class="fa fa-bars"></i>
+                </a>
+                
+                <div class="navbar-nav align-items-center ms-auto">
+                    <div class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+                            <i class="fa fa-envelope me-lg-2"></i>
+                            <span class="d-none d-lg-inline-flex">Links</span>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-end bg-light border-0 rounded-0 rounded-bottom m-0">
+                            <a href="#" class="dropdown-item">
+                                <div class="d-flex align-items-center">
+                                    
+                                    <div class="ms-2" onclick="myFunctionxvy()">
+                                        <h6 class="fw-normal mb-0">Left link</h6>
+                                        <small><span  id="print-link-left"></span></small>
+                                    </div>
+                                </div>
+                            </a>
+                            <hr class="dropdown-divider">
+                            <a href="#" class="dropdown-item">
+                                <div class="d-flex align-items-center">
+                                    
+                                    <div class="ms-2" onclick="myFunction2()">
+                                        <h6 class="fw-normal mb-0">Right Link</h6>
+                                        <small><span  id="print-link-right"></span></small>
+                                    </div>
+                                </div>
+                            </a>
+                            <hr class="dropdown-divider">
+                            
+                        </div>
+                    </div>
+                    <div class="nav-item dropdown">
+                       
+                    <div class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+                            
+                            <span class="d-none d-lg-inline-flex" id="user">John Doe</span>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-end bg-light border-0 rounded-0 rounded-bottom m-0">
+                            
+                            <a href="javascript:function_logout()" class="dropdown-item">Log Out</a>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+            <!-- Navbar End -->
+
+
+
+
+                   <!-- Sale & Revenue Start -->
+                   <div class="container-fluid pt-4 px-4">
+                
+                    <div class="row">
+                        <div class="col-sm-12">
+                          <div class="statistics-details d-flex align-items-center justify-content-between">
+                            <div class="sales-boxes">
+                              <div class="recent-sales box">
+                                <div class="title">Total deposited today around the world - <span id= "deposit_today">$52,700</span></div>
+                              </div>
+                            </div>
+                            
+                          </div>
+                        </div>
+                      </div>
+    
+                </div>
+                <!-- Sale & Revenue End -->
+    
+
+
+                    
+
+
+
+
+            <!-- Sale & Revenue Start -->
+            <div class="container-fluid pt-4 px-4">
+                
+                <div class="row">
+                    <div class="col-sm-12">
+                      <div class="statistics-details d-flex align-items-center justify-content-between">
+                        <div>
+                          <p class="statistics-title">My Investment</p>
+                          <h3 class="rate-percentage" id="balance">-</h3>
+                          <p class="text-danger d-flex"><span></span></p>
+                        </div>
+                        <div>
+                          <p class="statistics-title">ROI</p>
+                          <h3 class="rate-percentage" id="left_balance">-</h3>
+                          <p class="text-success d-flex"><span></span></p>
+                        </div>
+                        <div>
+                          <p class="statistics-title">Direct referral bonus</p>
+                          <h3 class="rate-percentage" id="direct_referral">-</h3>
+                          <p class="text-danger d-flex"><span></span></p>
+                        </div>
+                        
+                      </div>
+                    </div>
+                  </div>
+
+
+
+
+            </div>
+            <!-- Sale & Revenue End -->
+
+
+
+            <div class="container-fluid pt-4 px-4">
+                
+                <div class="row">
+                    <div class="col-sm-12">
+                      <div class="statistics-details d-flex align-items-center justify-content-between">
+                        <div>
+                          <p class="statistics-title">Binary Bonus</p>
+                          <h3 class="rate-percentage" id="direct">-</h3>
+                          <p class="text-danger d-flex"><span></span></p>
+                        </div>
+                        <div>
+                          <p class="statistics-title">Withdrawable balance</p>
+                          <h3 class="rate-percentage" id="right_balance">-</h3>
+                          <p class="text-success d-flex"><span></span></p>
+                        </div>
+                        <div>
+                          <p class="statistics-title">Withdrawn</p>
+                          <h3 class="rate-percentage" id= "withdraws">-</h3>
+                          <p class="text-danger d-flex"><span>--</span></p>
+                        </div>
+                        
+                      </div>
+                    </div>
+                  </div>
+
+
+
+
+            </div>
+
+
+            
+            
+
+
+
+
+          
+
+            <!-- Widgets Start -->
+            <div class="container-fluid pt-4 px-4">
+
+
+                <div class="row g-4">
+                    
+                    <div class="w3-container">
+                        <h2>Direct referrals</h2>
+                      
+                        <table class="w3-table w3-bordered" id="direct_reffarals_table">
+                          <tr>
+                            <th>Username</th>
+                            <th>Status</th>
+                          </tr>
+                        </table>
+                      </div>
+                
+                      <div class="w3-container">
+                        <h2>Indirect referrals</h2>
+                      
+                        <table class="w3-table w3-bordered" id="indirect_reffarals_table">
+                          <tr>
+                            <th>Username</th>
+                            <th>Status</th>
+                          </tr>
+                        </table>
+                      </div>  
+                    
+                </div>
+
+
+
+                <!-- Sale & Revenue Start -->
+                <div class="container-fluid pt-4 px-4">
+                
+                  <div class="row">
+                      <div class="col-sm-12">
+                        
+                        <!-- Cryptocurrency Price Widget --><script>!function(){var e=document.getElementsByTagName("script"),t=e[e.length-1],n=document.createElement("script");function r(){var e=crCryptocoinPriceWidget.init({base:"USD,EUR,CNY,GBP",items:"BTC,ETH,LTC",backgroundColor:"FFFFFF",streaming:"1",rounded:"1",boxShadow:"1",border:"1"});t.parentNode.insertBefore(e,t)}n.src="https://co-in.io/widget/pricelist.js?items=BTC%2CETH%2CLTC",n.async=!0,n.readyState?n.onreadystatechange=function(){"loaded"!=n.readyState&&"complete"!=n.readyState||(n.onreadystatechange=null,r())}:n.onload=function(){r()},t.parentNode.insertBefore(n,null)}();</script><a href="https://currencyrate.today/" rel="noopener" target="_blank">CurrencyRate.Today</a><!-- /Cryptocurrency Price Widget -->      
+                        
+                      </div>
+                    </div>
+  
+              </div>
+
+
+
+
+
+                <div class="row g-4">
+                    
+                    <div class="col-sm-12 col-md-6 col-xl-4">
+                        <div class="h-100 bg-light rounded p-4">
+                            <div class="d-flex align-items-center justify-content-between mb-4">
+                                <h6 class="mb-0">Calender</h6>
+                              
+                            </div>
+                            <div id="calender"></div>
+                        </div>
+                    </div>
+                    
+                    
+                </div>
+            </div>
+            <!-- Widgets End -->
+            <div class="container"> 
+                <iframe class="responsive-iframe" src="3d/index.html"></iframe>
+              </div>
+
+            <!-- Footer Start -->
+            <div class="container-fluid pt-4 px-4">
+                <div class="bg-light rounded-top p-4">
+                    <div class="row">
+                        <div class="col-12 col-sm-6 text-center text-sm-start">
+                            &copy; <a href="#">Metaverse Yield Network</a>, All Right Reserved. 
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+            <!-- Footer End -->
+        </div>
+        <!-- Content End -->
+
+
+        <!-- Back to Top -->
+        <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
+    </div>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="lib/chart/chart.min.js"></script>
+    <script src="lib/easing/easing.min.js"></script>
+    <script src="lib/waypoints/waypoints.min.js"></script>
+    <script src="lib/owlcarousel/owl.carousel.min.js"></script>
+    <script src="lib/tempusdominus/js/moment.min.js"></script>
+    <script src="lib/tempusdominus/js/moment-timezone.min.js"></script>
+    <script src="lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
+
+    <!-- Template Javascript -->
+    <script src="js/main.js"></script>
+</body>
+
+</html>
