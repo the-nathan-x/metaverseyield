@@ -77,15 +77,10 @@
        console.log(childData.approved);
        if(childData.approved == false)
        {
-           var btn  = document.createElement ("button");
-           btn.innerHTML = "approve";
-           
-           btn.onclick = function(){
-            var updates = {};
-            updates['/withdraws/' + childKey +"/approved" ] = true;
-            firebase.database().ref().update(updates);
 
-            var withdraw_total;
+        //calling firebase properties
+        var updates = {};
+        var withdraw_total;
 
 
             var databaserefer = firebase.database().ref('/users/' + childKey +"/withdraws");
@@ -96,79 +91,77 @@
             withdraw_balance = data;
             // window.alert(data);
 	 
-            });
             withdraw_total = withdraw_balance + parseInt(childData.withdraw_amount);
+           
 
-
-            var updates2 = {};
-            updates2['/users/' + childKey +"/withdraws" ] = withdraw_total;
-            firebase.database().ref().update(updates2);
-
+            });
+            
 
 
             var mail;
 
 
             var databaserefer_mail = firebase.database().ref('/users/' + childKey +"/email");
-            
+
 
             databaserefer.on('value', (snapshot) =>{
             const data = snapshot.val();
             mail = data;
             // window.alert(data);
-	 
+
             });
 
 
 
 
 
-
-
-
+           var btn  = document.createElement ("button");
+           btn.innerHTML = "approve";
+           
+           btn.onclick = function(){
 
 
 
             function sendEmail() {
 
-            var email_html_body = "<p>Hello!</p>" + "<h1>Your Metaverse Yield withdraw request has been processed successfully </h1> <p></p><p>We hope you have a pleasant time investing with us</p>";
+var email_html_body = "<p>Hello!</p>" + "<h1>Your Metaverse Yield withdraw request has been processed successfully </h1> <p></p><p>We hope you have a pleasant time investing with us</p>";
 
-            Email.send({
-            Host: "smtp.gmail.com",
-            Username: "metaverseyieldnetwork@gmail.com",
-            Password: "neno$iri",
-            To: mail,
-            From: "metaverseyieldnetwork@gmail.com",
-            Subject: "Metaverse Yield - Withdraw Processed Succesfully",
-            Body: email_html_body,
-                })
-  .then(function (message) {
-    console.log("mail sent successfully")
-  });
+Email.send({
+Host: "smtp.gmail.com",
+Username: "metaverseyieldnetwork@gmail.com",
+Password: "neno$iri",
+To: mail,
+From: "metaverseyieldnetwork@gmail.com",
+Subject: "Metaverse Yield - Withdraw Processed Succesfully",
+Body: email_html_body,
+    })
+.then(function (message) {
+console.log("mail sent successfully")
+});
 }
 
 
-sendEmail();      
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
-            alert('The user is created successfully!');
+          
+            
+            updates['/withdraws/' + childKey +"/approved" ] = true;
+            updates['/users/' + childKey +"/withdraws" ] = withdraw_total;
+            
+
+            
+           console.log(updates);
 
 
-
-
-
-            reload_page();                 
-           };
+/*
+            firebase.database().ref().update(updates)
+    .then(() => {
+           
+          sendEmail();
+          alert('The user is updated successfully!'); 
+          reload_page();      
+    });
+*/
+                 
+           }; //end of button on click function
             
            cellApprove.appendChild(btn);
        }
