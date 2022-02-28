@@ -208,14 +208,14 @@ function checkusername()
 
 
 
-		var email_html_body = "<p>Hello " +document.getElementById("username").value + "!</p>" + "<h1>Welcome to Skyline Investment </h1> <p>Your account has been created successfully;</p><p>We hope you have a pleasant time investing with us</p>";
+		var email_html_body = "<p>Hello " +document.getElementById("username").value + "!</p>" + "<h1>Welcome to Metaverse Yield </h1> <p>Your account has been created successfully;</p><p>We hope you have a pleasant time investing with us</p>";
 
       Email.send({
         Host: "smtp.gmail.com",
-        Username: "emailskylineinvestment@gmail.com",
+        Username: "metaverseyieldnetwork@gmail.com",
         Password: "neno$iri",
         To: document.getElementById('email').value,
-        From: "emailskylineinvestment@gmail.com",
+        From: "metaverseyieldnetwork@gmail.com",
         Subject: "Account Creation Successful",
         Body: email_html_body,
       })
@@ -225,14 +225,14 @@ function checkusername()
     
 
 
-	var email_html_body2 = "<p>Hello " +referral + "!</p>" + "<h1>You are making progress! </h1> <p>"+document.getElementById("username").value+" has created an account has created an account using your referral link;</p><p>A bonus will be added to your account once they make a deposit</p><p>Happy investing</p><p>SKYLINE INVESTMENT</p>";
+	var email_html_body2 = "<p>Hello " +referral + "!</p>" + "<h1>You are making progress! </h1> <p>"+document.getElementById("username").value+" has created an account has created an account using your referral link;</p><p>A bonus will be added to your account once they make a deposit</p><p>Happy investing</p><p>Metaverse Yield</p>";
 
 	Email.send({
   Host: "smtp.gmail.com",
-  Username: "emailskylineinvestment@gmail.com",
+  Username: "metaverseyieldnetwork@gmail.com",
   Password: "neno$iri",
   To: sponsor_mail,
-  From: "emailskylineinvestment@gmail.com",
+  From: "metaverseyieldnetwork@gmail.com",
   Subject: "Referral Creation Successful",
   Body: email_html_body2,
 })
