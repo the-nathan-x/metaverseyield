@@ -56,10 +56,11 @@ databaserefer.on('value', (snapshot) =>{
    if(data == document.getElementById("password").value)
    {
     sessionStorage.setItem("username", document.getElementById("username").value);
+    alert("Login sucessful!");
     location.replace("../dashboard/index.html");
    }
    else{
-     alert("Wrong username or password!")
+     alert("Wrong username or password!");
    }
  
   });

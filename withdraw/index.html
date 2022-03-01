@@ -132,7 +132,7 @@
       function print_instructions(){
         if(sessionStorage.getItem("username") == null)
                 {
-                  location.replace("../Login.html");
+                  location.replace("../login_signup/login.html");
                 }
   
   
@@ -141,7 +141,7 @@
      // window.alert(sessionStorage.getItem("total_balance"));
       if(parseInt(sessionStorage.getItem("withdrawable_balance")) < 25){
         window.alert("You do not have minimum withdraw balance which is $25, Your withdrawable balance is "+ sessionStorage.getItem("withdrawable_balance"));
-        location.replace("dashboard/index.html");
+        location.replace("../dashboard/index.html");
       }
     }
   

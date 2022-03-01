@@ -43,6 +43,15 @@
 		pos = position;
 	//	window.alert(referral);
 	//	window.alert(position);
+      if(referral == null)
+      {
+        referral = "Metaverse Yield";
+        position = "premier";
+      }
+
+
+
+
 		document.getElementById("sponsor_id").value = referral;
 		document.getElementById("pposition").value = position.toUpperCase();
 		}
@@ -251,7 +260,7 @@ function checkusername()
 
 
   </head>
-  <body>
+  <body onload="go()">
   
 
   
